@@ -28,10 +28,10 @@ class Landmark:
 class Robot:
   def __init__(self):
     # x[t] = D * x[t-1] + A * u[t-1]
-    px = random.uniform(-map_size/2, map_size/2)
-    py = random.uniform(-map_size/2, map_size/2)
-    x = np.array([[px, py], [0, 0]])
-    #x = np.zeros((2, 2))
+    #px = random.uniform(-map_size/2, map_size/2)
+    #py = random.uniform(-map_size/2, map_size/2)
+    #x = np.array([[px, py], [0, 0]])
+    x = np.zeros((2, 2))
     self.x = x # [[x, y], [vx, vy]]
     self.D = np.array([[1., 1.], [0., 1.]])
     self.u = np.zeros((1, 2)) # [ux uy]
