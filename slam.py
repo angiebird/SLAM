@@ -8,6 +8,7 @@ import six
 from matplotlib import colors
 
 map_size = 200
+landmark_num = 10
 colors_ = list(six.iteritems(colors.cnames))
 
 def get_scale(u0, s0, u1, s1):
@@ -109,13 +110,14 @@ class SLAM:
     self.landmarks = []
     self.particle_num = particle_num
     for pi in range(particle_num):
-      self.particles.append(Particle(10))
+      self.particles.append(Particle(landmark_num))
 
   def run(self, data):
-    self.gt = GroundTruth(10)
+    self.gt = GroundTruth(landmark_num)
     for u, landmark_idx in data:
-      self.predict(u)
+      self.predict(u + random.uniform(-0.05, 0.05))
       if landmark_idx >= 0:
+        print "observe", landmark_idx
         observation = self.gt.observe(landmark_idx)
         self.observe(landmark_idx, observation)
       self.resample()
@@ -149,7 +151,7 @@ class SLAM:
       new_particles.append(copy.deepcopy(p))
     self.particles = new_particles
   def show(self, plt):
-    #self.gt.show(plt)
+    self.gt.show(plt)
     for p in self.particles:
       p.show(plt)
 
@@ -184,8 +186,8 @@ class GroundTruth:
 
 if __name__ == '__main__':
   data = []
-  s = SLAM(20)
-  for t in range(20):
+  s = SLAM(40)
+  for t in range(40):
     landmark_idx = random.randint(0, 9)
     u = np.zeros((1, 2))
     if t == 0:
