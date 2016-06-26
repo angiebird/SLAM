@@ -1,0 +1,87 @@
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="points.js"></script>
+<div></div>
+
+<script>
+  var camera, scene, renderer;
+  var geometry, material, mesh;
+  var particleSystem;
+  var mouseDown = 0;
+  var mouseBaseX= 0;
+  var mouseBaseY= 0;
+  init();
+  animate();
+
+  function init() {
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 300;
+
+    scene = new THREE.Scene();
+
+    var particles = new THREE.Geometry();
+    pMaterial = new THREE.PointsMaterial({
+      //color: 0xFFFFFF,
+      size: 1,
+      transparent: true,
+      vertexColors: THREE.VertexColors,
+    });
+
+    scale = Math.pow(10, 7)
+    for (var p = 0; p < pLs.length; p++) {
+      pp = pLs[p]
+      var particle = new THREE.Vector3(pp[0] * scale, pp[1] * scale, pp[2] * scale);
+      particles.vertices.push(particle);
+    }
+
+    console.log(particles.vertices.length)
+    var colors = [];
+    for (var i = 0; i < particles.vertices.length; i++) {
+      t = tLs[i];
+      colors[i] = new THREE.Color(t[0], t[1], t[2]);
+    }
+    particles.colors = colors
+
+    particleSystem = new THREE.Points(particles, pMaterial);
+    scene.add(particleSystem);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.appendChild(renderer.domElement);
+    document.body.addEventListener("mousemove", handleMouseMove);
+    document.body.addEventListener("mousedown", handleMouseDown);
+    document.body.addEventListener("mousewheel", handleMouseWheel);
+    document.body.addEventListener("mouseup", handleMouseUp);
+    renderer.render(scene, camera);
+
+  }
+  function handleMouseWheel(e) {
+    // wheelDelta is multiple of 120
+    camera.position.z += e.wheelDelta / 12
+    console.log(e.wheelDelta)
+  }
+  function handleMouseDown(e) {
+    mouseDown = 1;
+    mouseBaseX = e.clientX;
+    mouseBaseY = e.clientY;
+  }
+  function handleMouseUp(e) {
+    mouseDown = 0;
+  }
+  function handleMouseMove(e) {
+    if(mouseDown == 1) {
+      var x = e.clientX;
+      var y = e.clientY;
+      particleSystem.rotation.y += 0.01 * (x - mouseBaseX);
+      particleSystem.rotation.x += 0.01 * (y - mouseBaseY);
+      mouseBaseX = e.clientX;
+      mouseBaseY = e.clientY;
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+</script>
